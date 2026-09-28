@@ -21,7 +21,7 @@ class Agent(mesa.Agent):
         self.judgement_fear = judgement_fear
 
         # stuff that gets updated throughout
-        self.responsibility_group = None  # if they get assigned responsibility this is where that shows up
+        self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up
         self.n_helpers = 0  # in the beginning there are no helpers yet
 
     def assign_responsibility(self, responsibility_group):
@@ -30,8 +30,14 @@ class Agent(mesa.Agent):
     def perceive_helpers(self, n_helpers):
         self.n_helpers = n_helpers
 
-    def update_feeling_of_responsibility(self):
+    def get_helping_probability(self, n_helpers):
         pass
+
+    def update_feeling_of_responsibility(self):
+        n_perceived_bystanders = self.n_responsibility_group
+        responsibility = 1/n_perceived_bystanders  # it could make sense to use a growth curve in here to reflect how at some point more bystanders will not have more of an effect (check studies)
+        # inlcude helping tendency
+        return responsibility
 
     def update_perceived_seriousness(self):
         pass
@@ -42,6 +48,5 @@ class Agent(mesa.Agent):
     def update_audience_inhibition(self):
         pass
 
-    def get_helping_probability(self):
-        pass
+
 
