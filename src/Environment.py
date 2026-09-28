@@ -1,5 +1,5 @@
 import mesa
-from src.agent import PartyAgents
+from src.Agent import PartyAgents
 
 class PartyEnvironment(mesa.Model):
     
