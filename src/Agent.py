@@ -4,11 +4,11 @@ class PartyAgents(mesa.Agent):
     def __init__(self,
                  model: mesa.Model,
                  n_bystanders: int,
-                 seriousness: float,
-                 helping_tendency: float = 0.5,
-                 confidence: float = 0.5,
-                 judgement_fear: float = 0.5,
-                 helping_threshold: float = 0.75,
+                 seriousness: float,  # 0 <= x <= 1
+                 helping_tendency: float = 0.5,  # 0 <= x <= 1
+                 confidence: float = 0.5,  # 0 <= x <= 1
+                 judgement_fear: float = 0.5,  # 0 <= x <= 1
+                 helping_threshold: float = 0.75,  # 0 <= x <= 1
                  ):
         super().__init__(model)  # this is what they did in the tutorial
 
