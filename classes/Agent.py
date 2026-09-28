@@ -1,6 +1,6 @@
 import mesa
 
-class Agent(mesa.Agent):
+class Agent(mesa.AgentCell):
     def __init__(self,
                  model: mesa.Model,
                  n_bystanders: int,
