@@ -1,6 +1,6 @@
 import mesa
-
-class Agent(mesa.AgentCell):
+from mesa.discrete_space import CellAgent
+class Agent(CellAgent):
     def __init__(self,
                  model: mesa.Model,
                  n_bystanders: int,
@@ -8,12 +8,14 @@ class Agent(mesa.AgentCell):
                  helping_tendency: float = 0.5,
                  confidence: float = 0.5,
                  judgement_fear: float = 0.5,
+                 cell: tuple = None
                  ):
         super().__init__(model)  # this is what they did in the tutorial
-
+        if cell is not None:
+            self.move_to(cell)
         self.n_bystanders = n_bystanders
         self.seriousness = seriousness
-
+        
         # these are optional and can be used to create variance in the population
         # at 0.5 they should have no effect
         self.helping_tendency = helping_tendency
