@@ -26,16 +26,6 @@ plot_comp = make_plot_component("encoding", page=1)
 @solara.component
 def CustomComponent():
     ...
-my_model = Environment.Environment(n=50, width=10, height=10)
-renderer = (
-    SpaceRenderer(model=my_model, backend="altair")
-    .setup_agents(agent_portrayal)
-    .render()
-)
-
-
-
-
 
 my_model = Environment.Environment(n=50, width=10, height=10)
 renderer = (
