@@ -1,6 +1,9 @@
+from src.environment import PartyEnvironment
+
 def main():
-    print("Hi")
-    
+    agent_nr = 33
+    env = PartyEnvironment(agent_nr)    
+    env.step()
     
 
 if __name__ == "__main__":
