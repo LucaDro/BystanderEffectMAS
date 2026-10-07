@@ -1,4 +1,4 @@
-from Agent import Agent as AgentClass
+from classes.Agent import PartyAgents as AgentClass
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 
