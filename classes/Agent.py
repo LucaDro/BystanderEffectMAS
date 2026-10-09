@@ -22,7 +22,7 @@ class PartyAgents(CellAgent):
         # at 0.5 they should have no effect
         self.helping_tendency = helping_tendency
         self.confidence = confidence
-        self.judgement_fear = judgement_fear
+        self.judgement_fear = judgement_fear # High judgement_fear means a high fear of being judged.
 
         # stuff that gets updated throughout
         self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up
@@ -35,7 +35,8 @@ class PartyAgents(CellAgent):
         self.n_responsibility_group = responsibility_group
 
     def perceive_helpers(self, n_helpers):
-        self.n_helpers = min(n_helpers, self.n_bystanders)
+        # Percieves the amount of current helpers, it made it equal to min(n_helpers, self.n_bystanders) before but that makes no sense to me so I changed it.
+        self.n_helpers = n_helpers
 
     def get_helping_probability(self):
         self._update_helping_probability()
@@ -52,7 +53,8 @@ class PartyAgents(CellAgent):
         and the perceived cost of non-intervention (drive to help).
         """
         cost_of_non_intervention = self._update_cost_of_non_intervention()
-        self.helping_probability = cost_of_non_intervention
+        audience_inhibition = self._update_audience_inhibition()
+        self.helping_probability = cost_of_non_intervention * (1 - audience_inhibition)
 
     def _update_helping_status(self):
         """Updates whether the agent is helping or not based on the helping probability and the helping threshold."""
@@ -63,7 +65,7 @@ class PartyAgents(CellAgent):
     def _update_feeling_of_responsibility(self):
         n_perceived_bystanders = self.n_responsibility_group
         responsibility_feeling = 1/n_perceived_bystanders  # it could make sense to use a growth curve with limit in here to reflect how at some point more bystanders will not have more of an effect (check studies)
-        perceived_responsibility = responsibility_feeling #* (self.helping_tendency + 0.5)
+        perceived_responsibility = responsibility_feeling * (self.helping_tendency + 0.5)
         return perceived_responsibility
 
     def _update_perceived_seriousness(self):
@@ -84,14 +86,15 @@ class PartyAgents(CellAgent):
         return cost_of_non_intervention
 
     def _update_audience_inhibition(self):
-        """high audience inhibition -> low score close to 0"""
+        # A high audience_inhibition is a bad thing
         # more bystanders = more fear of judgement -> exponential decay
-        DECAY_RATE = 0.1
-        INITIAL_AMOUNT = 0.5  # if there is no one watching your action would not change
-        bystander_fear = INITIAL_AMOUNT * (1-DECAY_RATE)**self.n_bystanders
+        DECAY_RATE = 0.5
+        # INITIAL_AMOUNT = 0.5  # if there is no one watching your action would not change
+        bystander_fear = self.judgement_fear * (1 - DECAY_RATE**self.n_bystanders)
 
         # less helpers -> helping more out of norm -> more chance of negative judgement -> more fear
-        # ROWTH_RATE = 0.5  # 0.5 because it does not take a lot of helpers to feel like helping too
-        # helper_observation = 1 - (1 - GROWTH_RATE) ** self.n_helpers
-
-        # idk man ignore this for now
+        GROWTH_RATE = 0.5  # 0.5 because it does not take a lot of helpers to feel like helping too
+        # The more helpers there are, the higher helper_observation is
+        helper_observation = 1 - (1 - GROWTH_RATE) ** self.n_helpers
+        audience_inhibition = bystander_fear * (1 - helper_observation) * self.confidence
+        return audience_inhibition
