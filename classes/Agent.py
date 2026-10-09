@@ -15,6 +15,7 @@ class PartyAgents(CellAgent):
                  ):
         super().__init__(model)  # this is what they did in the tutorial
 
+        self.population = n_bystanders
         self.n_bystanders = n_bystanders
         self.seriousness = seriousness
 
@@ -26,6 +27,7 @@ class PartyAgents(CellAgent):
 
         # stuff that gets updated throughout
         self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up
+        self.called_out = False
         self.n_helpers = 0  # in the beginning there are no helpers yet
 
         self.is_helping = False
@@ -33,10 +35,22 @@ class PartyAgents(CellAgent):
 
     def assign_responsibility(self, responsibility_group):
         self.n_responsibility_group = responsibility_group
+        self.called_out = True
 
     def perceive_helpers(self, n_helpers):
         # Percieves the amount of current helpers, it made it equal to min(n_helpers, self.n_bystanders) before but that makes no sense to me so I changed it.
         self.n_helpers = n_helpers
+        self.n_bystanders = self.population - n_helpers
+
+    def decide_take_action(self):
+        ACTION_THRESHOLD = 0.8
+        if self.is_helping == True:
+            return True
+        if self.get_helping_probability() >= ACTION_THRESHOLD:
+            self.is_helping = True
+            return True
+        else:
+            return False
 
     def get_helping_probability(self):
         self._update_helping_probability()
@@ -63,7 +77,7 @@ class PartyAgents(CellAgent):
                 self.is_helping = True
 
     def _update_feeling_of_responsibility(self):
-        n_perceived_bystanders = self.n_responsibility_group
+        n_perceived_bystanders = self.n_responsibility_group if self.called_out == True else self.n_bystanders
         responsibility_feeling = 1/n_perceived_bystanders  # it could make sense to use a growth curve with limit in here to reflect how at some point more bystanders will not have more of an effect (check studies)
         perceived_responsibility = responsibility_feeling * (self.helping_tendency + 0.5)
         return perceived_responsibility
