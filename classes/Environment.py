@@ -1,4 +1,4 @@
-from classes.Agent import PartyAgents as AgentClass
+from classes.Agent import PartyAgents as AgentClass, incidentAgent as IncidentAgent
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 import pandas as pd
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 def compute_helpers(model):
     n = model.num_agents
     helpers = 0
-    helpers += sum([1 if agent.called_out is True else 0 for agent in model.agents])
+    helpers += sum(1 for agent in model.bystanders if agent.called_out is True)
     helpers_percentage = helpers/n
     return helpers_percentage
 
@@ -37,17 +37,19 @@ class Environment(mesa.Model):
             model_reporters={"helpers percentage": compute_helpers,
                              "called_out_helpers": compute_called_out_helpers,
                              "non called out helpers": compute_non_called_out_helpers},
-            agent_reporters={
-                "n_bystanders": "n_bystanders",
-                "seriousness": "seriousness",
-                "helping_tendency": "helping_tendency",
-                "confidence": "confidence",
-                "judgement_fear": "judgement_fear",
-                "n_responsibility_group": "n_responsibility_group",
-                "n_helpers": "n_helpers",
+            agenttype_reporters={
+                AgentClass: {
+                    "n_bystanders": "n_bystanders",
+                    "seriousness": "seriousness",
+                    "helping_tendency": "helping_tendency",
+                    "confidence": "confidence",
+                    "judgement_fear": "judgement_fear",
+                    "n_responsibility_group": "n_responsibility_group",
+                    "n_helpers": "n_helpers",
+                },
             },
         )
-        agents = AgentClass.create_agents(
+        self.bystanders = AgentClass.create_agents(
             self,
             self.num_agents,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
@@ -57,12 +59,23 @@ class Environment(mesa.Model):
             confidence=[self.random.random() for _ in range(self.num_agents)],
             judgement_fear=[self.random.random() for _ in range(self.num_agents)],
         )
+        IncidentAgent(
+            self,
+            cell=next(
+                cell
+                for cell in self.grid.all_cells.cells
+                if cell.coordinate == (width // 2, height // 2)
+            ),
+            seriousness=0.5,
+            num_of_agents_helping=0,
+            is_asking_for_help=True,
+        )
 
     def step(self):
         self.datacollector.collect(self)
-        helpers = len(self.agents.select(lambda a: a.is_helping == True))
-        self.agents.do("perceive_helpers", helpers)
-        self.agents.do("decide_take_action")
+        helpers = len(self.bystanders.select(lambda a: a.is_helping == True))
+        self.bystanders.do("perceive_helpers", helpers)
+        self.bystanders.do("decide_take_action")
 
     def extract_data(self):
         helpers_over_time = self.datacollector.get_model_vars_dataframe()

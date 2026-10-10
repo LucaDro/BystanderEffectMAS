@@ -1,6 +1,6 @@
 import mesa
 import random
-from mesa.discrete_space import CellAgent
+from mesa.discrete_space import Cell, CellAgent, FixedAgent
 
 
 class PartyAgents(CellAgent):
@@ -112,3 +112,35 @@ class PartyAgents(CellAgent):
         helper_observation = 1 - (1 - GROWTH_RATE) ** self.n_helpers
         audience_inhibition = bystander_fear * (1 - helper_observation) * self.confidence
         return audience_inhibition
+
+
+class incidentAgent(FixedAgent):
+    def __init__(self, model: mesa.Model,
+                  cell: Cell,
+                  seriousness: float,
+                  num_of_agents_helping: int,
+                  is_asking_for_help: bool,):
+        super().__init__(model)
+        self.cell = cell
+        self.seriousness = seriousness
+        self.num_of_agents_helping = num_of_agents_helping
+        self.is_asking_for_help = is_asking_for_help
+
+    def get_seriousness(self):
+        return self.seriousness 
+
+    def set_seriousness(self, seriousness: float):
+        self.seriousness = seriousness
+
+    def get_num_of_agents_helping(self):
+        return self.num_of_agents_helping
+
+    def set_num_of_agents_helping(self, num_of_agents_helping: int):
+        self.num_of_agents_helping = num_of_agents_helping
+
+    def get_is_asking_for_help(self):
+        return self.is_asking_for_help
+
+    def set_is_asking_for_help(self, is_asking_for_help: bool):
+        self.is_asking_for_help = is_asking_for_help
+    
