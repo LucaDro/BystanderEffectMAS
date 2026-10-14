@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 def compute_helpers(model):
     n = model.num_agents
     helpers = 0
-    helpers += sum(1 for agent in model.bystanders if agent.is_helping is True)
+    helpers += sum(1 for agent in model.bystanders if agent.called_out is True)
     print(helpers)
     helpers_percentage = helpers/n
     return helpers_percentage
