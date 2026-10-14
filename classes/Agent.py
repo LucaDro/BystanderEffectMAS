@@ -43,10 +43,13 @@ class PartyAgents(CellAgent):
         self.n_bystanders = self.population - n_helpers
 
     def decide_take_action(self):
-        ACTION_THRESHOLD = 0.8
+        ACTION_THRESHOLD = 0.4
+        helping_prob = self.get_helping_probability()
+        print(helping_prob)
         if self.is_helping == True:
             return True
-        if self.get_helping_probability() >= ACTION_THRESHOLD:
+        if helping_prob >= ACTION_THRESHOLD:
+            print("they started helping")
             self.is_helping = True
             return True
         else:
