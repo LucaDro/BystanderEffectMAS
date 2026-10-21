@@ -55,7 +55,7 @@ class Environment(mesa.Model):
             self.num_agents,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n_bystanders=self.num_agents-1,
-            seriousness=[self.random.random() for _ in range(self.num_agents)],
+            seriousness=1,
             helping_tendency=[self.random.random() for _ in range(self.num_agents)],
             confidence=[self.random.random() for _ in range(self.num_agents)],
             judgement_fear=[self.random.random() for _ in range(self.num_agents)],
