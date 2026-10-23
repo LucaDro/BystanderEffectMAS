@@ -57,20 +57,9 @@ class Environment(mesa.Model):
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n_bystanders=self.num_agents-1,
             seriousness=1,
-            helping_tendency=[self.random.random() for _ in range(self.num_agents)],
-            confidence=[self.random.random() for _ in range(self.num_agents)],
-            judgement_fear=[self.random.random() for _ in range(self.num_agents)],
-        )
-        IncidentAgent(
-            self,
-            cell=next(
-                cell
-                for cell in self.grid.all_cells.cells
-                if cell.coordinate == (width // 2, height // 2)
-            ),
-            seriousness=0.5,
-            num_of_agents_helping=0,
-            is_asking_for_help=True,
+            helping_tendency=[random.normal(0.5, 1) for _ in range(self.num_agents)],
+            confidence=[random.normal(0.5, 1) for _ in range(self.num_agents)],
+            judgement_fear=[random.normal(0.5, 1) for _ in range(self.num_agents)],
         )
 
     def step(self):

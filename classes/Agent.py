@@ -34,8 +34,8 @@ class PartyAgents(CellAgent):
         self.helping_probability = None
         print("agent")
         print(self.helping_tendency)
-        print(confidence)
-        print(judgement_fear)
+        print(self.confidence)
+        print(self.judgement_fear)
 
     def assign_responsibility(self, responsibility_group):
         self.n_responsibility_group = responsibility_group
@@ -51,7 +51,6 @@ class PartyAgents(CellAgent):
             return True
         ACTION_THRESHOLD = self._update_audience_inhibition()
         helping_prob = self.get_helping_probability()
-        print(helping_prob)
         if helping_prob >= ACTION_THRESHOLD:
             self.is_helping = True
             return True
@@ -129,35 +128,3 @@ class PartyAgents(CellAgent):
         numerator = ((1-helper_proportion)**self.n_helpers) * self.judgement_fear
         audience_inhibition_threshold = START_THRESHOLD + numerator/2
         return audience_inhibition_threshold
-
-
-class incidentAgent(FixedAgent):
-    def __init__(self, model: mesa.Model,
-                  cell: Cell,
-                  seriousness: float,
-                  num_of_agents_helping: int,
-                  is_asking_for_help: bool,):
-        super().__init__(model)
-        self.cell = cell
-        self.seriousness = seriousness
-        self.num_of_agents_helping = num_of_agents_helping
-        self.is_asking_for_help = is_asking_for_help
-
-    def get_seriousness(self):
-        return self.seriousness 
-
-    def set_seriousness(self, seriousness: float):
-        self.seriousness = seriousness
-
-    def get_num_of_agents_helping(self):
-        return self.num_of_agents_helping
-
-    def set_num_of_agents_helping(self, num_of_agents_helping: int):
-        self.num_of_agents_helping = num_of_agents_helping
-
-    def get_is_asking_for_help(self):
-        return self.is_asking_for_help
-
-    def set_is_asking_for_help(self, is_asking_for_help: bool):
-        self.is_asking_for_help = is_asking_for_help
-    
