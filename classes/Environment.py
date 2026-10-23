@@ -1,4 +1,4 @@
-from classes.Agent import PartyAgents as AgentClass, incidentAgent as IncidentAgent
+from classes.Agent import PartyAgents as AgentClass
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 import pandas as pd
@@ -61,6 +61,8 @@ class Environment(mesa.Model):
             confidence=[random.normal(0.5, 1) for _ in range(self.num_agents)],
             judgement_fear=[random.normal(0.5, 1) for _ in range(self.num_agents)],
         )
+        print("this is it")
+        print(random.normal(0.5, 1))
 
     def step(self):
         self.datacollector.collect(self)
