@@ -4,6 +4,7 @@ from mesa.discrete_space import OrthogonalMooreGrid
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from numpy import random
 
 
 def compute_helpers(model):

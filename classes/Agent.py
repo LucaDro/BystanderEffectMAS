@@ -32,6 +32,10 @@ class PartyAgents(CellAgent):
 
         self.is_helping = False
         self.helping_probability = None
+        print("agent")
+        print(self.helping_tendency)
+        print(confidence)
+        print(judgement_fear)
 
     def assign_responsibility(self, responsibility_group):
         self.n_responsibility_group = responsibility_group
@@ -46,8 +50,6 @@ class PartyAgents(CellAgent):
         if self.is_helping == True:
             return True
         ACTION_THRESHOLD = self._update_audience_inhibition()
-        print("compare")
-        print(ACTION_THRESHOLD)
         helping_prob = self.get_helping_probability()
         print(helping_prob)
         if helping_prob >= ACTION_THRESHOLD:
@@ -98,11 +100,8 @@ class PartyAgents(CellAgent):
 
     def _update_cost_of_non_intervention(self):
         WEIGHT = 0.5
-        print("stuff")
         p_responsibility = self._update_feeling_of_responsibility()
         p_seriousness = self._update_perceived_seriousness()
-        print(p_responsibility)
-        print(p_seriousness)
         cost_of_non_intervention = p_responsibility * WEIGHT + p_seriousness * (1-WEIGHT)
         return cost_of_non_intervention
 
