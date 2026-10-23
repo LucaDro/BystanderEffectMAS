@@ -31,9 +31,11 @@ class Environment(mesa.Model):
                 n,
                 width,
                 height,
+                agents_helping: int = 0,
                 rng=None):
         super().__init__(rng=rng)
         self.num_agents = n
+        self.agents_helping = agents_helping
         self.grid = OrthogonalMooreGrid((width, height), torus=True, random=self.random)
         self.datacollector = mesa.DataCollector(
             model_reporters={"helpers percentage": compute_helpers,
@@ -61,8 +63,17 @@ class Environment(mesa.Model):
             confidence=[random.normal(0.5, 1) for _ in range(self.num_agents)],
             judgement_fear=[random.normal(0.5, 1) for _ in range(self.num_agents)],
         )
+        self.schedule_event(self.call_for_help, at=0.0)
         print("this is it")
         print(random.normal(0.5, 1))
+
+    def call_for_help(self):
+        selected_agents = self.random.sample(
+            list(self.bystanders),
+            k=self.agents_helping,
+        )
+        for agent in selected_agents:
+            agent.is_helping = True
 
     def step(self):
         self.datacollector.collect(self)
