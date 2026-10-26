@@ -106,7 +106,7 @@ class PartyAgents(CellAgent):
         return perceived_seriousness
 
     def _update_cost_of_non_intervention(self):
-        WEIGHT = 0.7
+        WEIGHT = 0.6
         p_responsibility = self._update_feeling_of_responsibility()
         p_seriousness = self._update_perceived_seriousness()
         # cost_of_non_intervention = p_responsibility * (p_seriousness+0.5)
