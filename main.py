@@ -22,6 +22,8 @@ def plot_stuff(s, agent_nr_list, percentage_helper):
     ax.plot(bx, by, 'x', markeredgewidth=2)
     ax.plot(bx_agg, by_agg, linewidth=2.0, label="baseline")
     ax.plot(agent_nr_list, percentage_helper, label="model")
+    ax.set_xlabel("number of bystanders")
+    ax.set_ylabel(f"probability at seriousness {s}")
     ax.set(ylim=(0, 1.1))
     plt.legend()
     plt.axis((agent_nr_list[0]-1, agent_nr_list[-1]+1, 0,1))
@@ -30,7 +32,7 @@ def plot_stuff(s, agent_nr_list, percentage_helper):
 
 def main():
     seriousness_list = [0.3, 0.4, 0.6, 0.8, 0.9]
-    for seriousness in seriousness_list:
+    for seriousness in seriousness_list[-2:]:
         percentage_helper = [0,0,0,0,0]
         agent_nr_list = [1,2,3,4,5]
         for idx, agent in enumerate(agent_nr_list):
