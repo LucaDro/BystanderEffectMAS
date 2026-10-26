@@ -23,6 +23,20 @@ class PartyAgents(CellAgent):
         self.helping_tendency = helping_tendency
         self.confidence = confidence
         self.judgement_fear = judgement_fear # High judgement_fear means a high fear of being judged.
+        if self.confidence < 0:
+            self.confidence = 0
+        if self.confidence > 1:
+            self.confidence = 1
+        if self.helping_tendency < 0:
+            self.helping_tendency = 0
+        if self.helping_tendency > 1:
+            self.helping_tendency = 1
+        if self.judgement_fear < 0:
+            self.judgement_fear = 0
+        if self.judgement_fear > 1:
+            self.judgement_fear = 1
+        if n_bystanders == 1:
+            self.judgement_fear = 0
 
         # stuff that gets updated throughout
         self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up

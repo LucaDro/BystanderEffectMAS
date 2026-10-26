@@ -61,8 +61,9 @@ class Environment(mesa.Model):
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n_bystanders=self.num_agents,
             seriousness=self.seriousness,
-            helping_tendency=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
-            confidence=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
+            helping_tendency=[np.random.normal(0.6, 0.25) for _ in range(self.num_agents)],
+            confidence=[np.random.normal(0.75, 0.125) for _ in range(self.num_agents)],
+            # confidence = 1,
             judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
         self.schedule_event(self.call_for_help, at=0.0)
