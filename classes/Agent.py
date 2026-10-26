@@ -36,7 +36,7 @@ class PartyAgents(CellAgent):
         if self.judgement_fear > 1:
             self.judgement_fear = 1
         if n_bystanders == 1:
-            self.judgement_fear = 0
+            self.judgement_fear /=2
 
         # stuff that gets updated throughout
         self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up

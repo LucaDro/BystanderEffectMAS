@@ -62,7 +62,7 @@ class Environment(mesa.Model):
             n_bystanders=self.num_agents,
             seriousness=self.seriousness,
             helping_tendency=[np.random.normal(0.6, 0.25) for _ in range(self.num_agents)],
-            confidence=[np.random.normal(0.75, 0.125) for _ in range(self.num_agents)],
+            confidence=[np.random.normal(0.9, 0.025) for _ in range(self.num_agents)],
             # confidence = 1,
             judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
@@ -75,8 +75,7 @@ class Environment(mesa.Model):
             list(self.bystanders),
             k=self.agents_helping,
         )
-        for agent in selected_agents:
-            agent.is_helping = True
+        # selected_agents.do("assign_responsibility", self.agents_helping)
 
 
     def step(self):
