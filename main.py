@@ -6,9 +6,24 @@ import pandas as pd
 def read_baseline():
     bl = pd.read_csv("baseline.csv")
     s = 0.8
-    bl_s = bl[bl["seriousness"]==s]
-    print(bl_s.head())
-    return bl
+    bl = bl[bl["seriousness"]==s]
+    bl_agg = bl.groupby('n_bystanders')['probability_help'].mean().reset_index()
+
+    for n in bl["n_bystanders"].unique():
+        value_count = len(bl[bl["n_bystanders"]==n]["probability_help"])
+        print(f"{n}: {value_count}")
+
+    x = bl["n_bystanders"]
+    y = bl["probability_help"]
+    x_agg = bl_agg["n_bystanders"]
+    y_agg = bl_agg["probability_help"]
+
+    fig, ax = plt.subplots()
+    ax.plot(x, y, 'x', markeredgewidth=2)
+    ax.plot(x_agg, y_agg, linewidth=2.0)
+    ax.set(ylim=(0, 1.1))
+
+    plt.show()
 
 def main():
     percentage_helper = [0,0,0,0,0]
