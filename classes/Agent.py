@@ -35,8 +35,6 @@ class PartyAgents(CellAgent):
             self.judgement_fear = 0
         if self.judgement_fear > 1:
             self.judgement_fear = 1
-        if n_bystanders == 1:
-            self.judgement_fear = 0
 
         # stuff that gets updated throughout
         self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up
@@ -108,9 +106,10 @@ class PartyAgents(CellAgent):
         return perceived_seriousness
 
     def _update_cost_of_non_intervention(self):
-        WEIGHT = 0.5
+        WEIGHT = 0.7
         p_responsibility = self._update_feeling_of_responsibility()
         p_seriousness = self._update_perceived_seriousness()
+        # cost_of_non_intervention = p_responsibility * (p_seriousness+0.5)
         cost_of_non_intervention = p_responsibility * WEIGHT + p_seriousness * (1-WEIGHT)
         return cost_of_non_intervention
 
@@ -133,7 +132,7 @@ class PartyAgents(CellAgent):
         The threshold is between 0.5 (START_THRESHOLD) and 1 (START_THRESHOLD + 0.5), I didn't want to have it be extremely low even when there are a lot of helpers.
         It decreases based off of how many helpers there are and what the ratio of helpers to non helpers is
         It also decreases as the fear of judgement decreases.'''
-        START_THRESHOLD = 0.5
+        START_THRESHOLD = 0.4
         helper_proportion = self.n_helpers/self.n_bystanders
         numerator = ((1-helper_proportion)**self.n_helpers) * self.judgement_fear
         audience_inhibition_threshold = START_THRESHOLD + numerator/2
