@@ -3,30 +3,33 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def read_baseline():
+def read_baseline(s):
     bl = pd.read_csv("baseline.csv")
-    s = 0.9
     bl = bl[bl["seriousness"]==s]
     bl_agg = bl.groupby('n_bystanders')['probability_help'].mean().reset_index()
-
-    for n in bl["n_bystanders"].unique():
-        value_count = len(bl[bl["n_bystanders"]==n]["probability_help"])
-        print(f"{n}: {value_count}")
 
     x = bl["n_bystanders"]
     y = bl["probability_help"]
     x_agg = bl_agg["n_bystanders"]
     y_agg = bl_agg["probability_help"]
 
-    fig, ax = plt.subplots()
-    ax.plot(x, y, 'x', markeredgewidth=2)
-    ax.plot(x_agg, y_agg, linewidth=2.0)
-    ax.set(ylim=(0, 1.1))
+    return x, y, x_agg, y_agg
 
+
+def plot_stuff(s, agent_nr_list, percentage_helper):
+    bx, by, bx_agg, by_agg = read_baseline(s)
+    fig, ax = plt.subplots()
+    ax.plot(bx, by, 'x', markeredgewidth=2)
+    ax.plot(bx_agg, by_agg, linewidth=2.0, label="baseline")
+    ax.plot(agent_nr_list, percentage_helper, label="model")
+    ax.set(ylim=(0, 1.1))
+    plt.legend()
+    plt.axis((agent_nr_list[0]-1, agent_nr_list[-1]+1, 0,1))
     plt.show()
 
+
 def main():
-    seriousness_list = [0.2,0.4,0.6,0.8]
+    seriousness_list = [0.3, 0.4, 0.6, 0.8, 0.9]
     for seriousness in seriousness_list:
         percentage_helper = [0,0,0,0,0]
         agent_nr_list = [1,2,3,4,5]
@@ -42,11 +45,7 @@ def main():
                 percentage_helper[idx] += help
             percentage_helper[idx] /= iterations
             print("Percentage of Helpers:", percentage_helper)
-        plt.plot(agent_nr_list, percentage_helper, label = seriousness)
-    plt.legend()
-    plt.axis((agent_nr_list[0]-1, agent_nr_list[-1]+1, 0,1))
-    plt.show()
+        plot_stuff(seriousness, agent_nr_list, percentage_helper)
 
 if __name__ == "__main__":
     main()
-    # read_baseline()
