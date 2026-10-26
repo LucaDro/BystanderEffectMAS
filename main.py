@@ -5,7 +5,7 @@ import pandas as pd
 
 def read_baseline():
     bl = pd.read_csv("baseline.csv")
-    s = 0.8
+    s = 0.9
     bl = bl[bl["seriousness"]==s]
     bl_agg = bl.groupby('n_bystanders')['probability_help'].mean().reset_index()
 
