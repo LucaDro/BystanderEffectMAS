@@ -63,7 +63,6 @@ class Environment(mesa.Model):
             confidence=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
             judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
-
         self.schedule_event(self.call_for_help, at=0.0)
         print("this is it")
         print(np.random.normal(0.5, 1))
@@ -75,6 +74,7 @@ class Environment(mesa.Model):
         )
         for agent in selected_agents:
             agent.is_helping = True
+
 
     def step(self):
         self.datacollector.collect(self)
