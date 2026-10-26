@@ -10,6 +10,7 @@ requires-python = ">=3.14"
 dependencies = [
     "mesa>=3.5.1",
     "networkx>=3.7",
+    "numpy>=2.5.3",
     "seaborn>=0.13.2",
 ]
 

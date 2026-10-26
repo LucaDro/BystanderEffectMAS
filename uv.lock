@@ -26,6 +26,7 @@ source = { editable = "." }
 dependencies = [
     { name = "mesa" },
     { name = "networkx" },
+    { name = "numpy" },
     { name = "seaborn" },
 ]
 
@@ -33,6 +34,7 @@ dependencies = [
 requires-dist = [
     { name = "mesa", specifier = ">=3.5.1" },
     { name = "networkx", specifier = ">=3.7" },
+    { name = "numpy", specifier = ">=2.5.3" },
     { name = "seaborn", specifier = ">=0.13.2" },
 ]
 

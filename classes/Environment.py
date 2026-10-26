@@ -1,9 +1,10 @@
-from classes.Agent import PartyAgents as AgentClass, incidentAgent as IncidentAgent
+from classes.Agent import PartyAgents as AgentClass
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def compute_helpers(model):
@@ -30,9 +31,11 @@ class Environment(mesa.Model):
                 n,
                 width,
                 height,
+                agents_helping: int = 0,
                 rng=None):
         super().__init__(rng=rng)
         self.num_agents = n
+        self.agents_helping = agents_helping
         self.grid = OrthogonalMooreGrid((width, height), torus=True, random=self.random)
         self.datacollector = mesa.DataCollector(
             model_reporters={"helpers percentage": compute_helpers,
@@ -54,23 +57,24 @@ class Environment(mesa.Model):
             self,
             self.num_agents,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
-            n_bystanders=self.num_agents-1,
-            seriousness=[self.random.random() for _ in range(self.num_agents)],
-            helping_tendency=[self.random.random() for _ in range(self.num_agents)],
-            confidence=[self.random.random() for _ in range(self.num_agents)],
-            judgement_fear=[self.random.random() for _ in range(self.num_agents)],
+            n_bystanders=self.num_agents,
+            seriousness=1,
+            helping_tendency=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
+            confidence=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
+            judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
-        IncidentAgent(
-            self,
-            cell=next(
-                cell
-                for cell in self.grid.all_cells.cells
-                if cell.coordinate == (width // 2, height // 2)
-            ),
-            seriousness=0.5,
-            num_of_agents_helping=0,
-            is_asking_for_help=True,
+        self.schedule_event(self.call_for_help, at=0.0)
+        print("this is it")
+        print(np.random.normal(0.5, 1))
+
+    def call_for_help(self):
+        selected_agents = self.random.sample(
+            list(self.bystanders),
+            k=self.agents_helping,
         )
+        for agent in selected_agents:
+            agent.is_helping = True
+
 
     def step(self):
         self.datacollector.collect(self)
@@ -79,7 +83,10 @@ class Environment(mesa.Model):
         self.bystanders.do("decide_take_action")
 
     def extract_data(self):
-        helpers_over_time = self.datacollector.get_model_vars_dataframe()
-        g = sns.lineplot(data=helpers_over_time)
+        self.helpers_over_time = self.datacollector.get_model_vars_dataframe()
+        g = sns.lineplot(data=self.helpers_over_time)
         g.set(title="Helpers over time", ylabel="helpers")
         plt.show()
+
+    def get_total_helpers(self):
+        return len(self.bystanders.select(lambda a: a.is_helping == True))

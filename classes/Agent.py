@@ -15,7 +15,6 @@ class PartyAgents(CellAgent):
                  ):
         super().__init__(model)  # this is what they did in the tutorial
 
-        self.population = n_bystanders
         self.n_bystanders = n_bystanders
         self.seriousness = seriousness
 
@@ -29,6 +28,7 @@ class PartyAgents(CellAgent):
         self.n_responsibility_group = n_bystanders  # if they get assigned responsibility this is where that shows up
         self.called_out = False
         self.n_helpers = 0  # in the beginning there are no helpers yet
+        self.n_non_helpers = n_bystanders
 
         self.is_helping = False
         self.helping_probability = None
@@ -40,16 +40,14 @@ class PartyAgents(CellAgent):
     def perceive_helpers(self, n_helpers):
         # Percieves the amount of current helpers, it made it equal to min(n_helpers, self.n_bystanders) before but that makes no sense to me so I changed it.
         self.n_helpers = n_helpers
-        self.n_bystanders = self.population - n_helpers
+        self.n_non_helpers = self.n_bystanders - n_helpers
 
     def decide_take_action(self):
-        ACTION_THRESHOLD = 0.25
-        helping_prob = self.get_helping_probability()
-        print(helping_prob)
         if self.is_helping == True:
             return True
+        ACTION_THRESHOLD = self._update_audience_inhibition()
+        helping_prob = self.get_helping_probability()
         if helping_prob >= ACTION_THRESHOLD:
-            print("they started helping")
             self.is_helping = True
             return True
         else:
@@ -70,8 +68,8 @@ class PartyAgents(CellAgent):
         and the perceived cost of non-intervention (drive to help).
         """
         cost_of_non_intervention = self._update_cost_of_non_intervention()
-        audience_inhibition = self._update_audience_inhibition()
-        self.helping_probability = cost_of_non_intervention * (1 - audience_inhibition)
+        # audience_inhibition = self._update_audience_inhibition()
+        self.helping_probability = cost_of_non_intervention # * (1 - audience_inhibition)
 
     def _update_helping_status(self):
         """Updates whether the agent is helping or not based on the helping probability and the helping threshold."""
@@ -96,54 +94,33 @@ class PartyAgents(CellAgent):
         return perceived_seriousness
 
     def _update_cost_of_non_intervention(self):
-        WEIGHT = 0.6
+        WEIGHT = 0.5
         p_responsibility = self._update_feeling_of_responsibility()
         p_seriousness = self._update_perceived_seriousness()
         cost_of_non_intervention = p_responsibility * WEIGHT + p_seriousness * (1-WEIGHT)
         return cost_of_non_intervention
 
+    # def _update_audience_inhibition(self):
+    #     # A high audience_inhibition is a bad thing
+    #     # more bystanders = more fear of judgement -> exponential decay
+    #     DECAY_RATE = 0.5
+    #     # INITIAL_AMOUNT = 0.5  # if there is no one watching your action would not change
+    #     bystander_fear = self.judgement_fear * (1 - DECAY_RATE**self.n_bystanders)
+
+    #     # less helpers -> helping more out of norm -> more chance of negative judgement -> more fear
+    #     GROWTH_RATE = 0.5  # 0.5 because it does not take a lot of helpers to feel like helping too
+    #     # The more helpers there are, the higher helper_observation is
+    #     helper_observation = 1 - (1 - GROWTH_RATE) ** self.n_helpers
+    #     audience_inhibition = bystander_fear * (1 - helper_observation) * self.confidence
+    #     return audience_inhibition
+
     def _update_audience_inhibition(self):
-        # A high audience_inhibition is a bad thing
-        # more bystanders = more fear of judgement -> exponential decay
-        DECAY_RATE = 0.5
-        # INITIAL_AMOUNT = 0.5  # if there is no one watching your action would not change
-        bystander_fear = self.judgement_fear * (1 - DECAY_RATE**self.n_bystanders)
-
-        # less helpers -> helping more out of norm -> more chance of negative judgement -> more fear
-        GROWTH_RATE = 0.5  # 0.5 because it does not take a lot of helpers to feel like helping too
-        # The more helpers there are, the higher helper_observation is
-        helper_observation = 1 - (1 - GROWTH_RATE) ** self.n_helpers
-        audience_inhibition = bystander_fear * (1 - helper_observation) * self.confidence
-        return audience_inhibition
-
-
-class incidentAgent(FixedAgent):
-    def __init__(self, model: mesa.Model,
-                  cell: Cell,
-                  seriousness: float,
-                  num_of_agents_helping: int,
-                  is_asking_for_help: bool,):
-        super().__init__(model)
-        self.cell = cell
-        self.seriousness = seriousness
-        self.num_of_agents_helping = num_of_agents_helping
-        self.is_asking_for_help = is_asking_for_help
-
-    def get_seriousness(self):
-        return self.seriousness 
-
-    def set_seriousness(self, seriousness: float):
-        self.seriousness = seriousness
-
-    def get_num_of_agents_helping(self):
-        return self.num_of_agents_helping
-
-    def set_num_of_agents_helping(self, num_of_agents_helping: int):
-        self.num_of_agents_helping = num_of_agents_helping
-
-    def get_is_asking_for_help(self):
-        return self.is_asking_for_help
-
-    def set_is_asking_for_help(self, is_asking_for_help: bool):
-        self.is_asking_for_help = is_asking_for_help
-    
+        '''New audience inhibition, it gives a threshold that the responsibility and seriousness have to surpass
+        The threshold is between 0.5 (START_THRESHOLD) and 1 (START_THRESHOLD + 0.5), I didn't want to have it be extremely low even when there are a lot of helpers.
+        It decreases based off of how many helpers there are and what the ratio of helpers to non helpers is
+        It also decreases as the fear of judgement decreases.'''
+        START_THRESHOLD = 0.5
+        helper_proportion = self.n_helpers/self.n_bystanders
+        numerator = ((1-helper_proportion)**self.n_helpers) * self.judgement_fear
+        audience_inhibition_threshold = START_THRESHOLD + numerator/2
+        return audience_inhibition_threshold
