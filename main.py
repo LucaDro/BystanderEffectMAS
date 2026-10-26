@@ -1,5 +1,14 @@
 from classes.Environment import Environment
 import matplotlib.pyplot as plt
+import pandas as pd
+
+
+def read_baseline():
+    bl = pd.read_csv("baseline.csv")
+    s = 0.8
+    bl_s = bl[bl["seriousness"]==s]
+    print(bl_s.head())
+    return bl
 
 def main():
     percentage_helper = [0,0,0,0,0]
@@ -22,4 +31,5 @@ def main():
     plt.show()
 
 if __name__ == "__main__":
-    main()
+    #main()
+    read_baseline()
