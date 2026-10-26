@@ -11,7 +11,7 @@ def compute_helpers(model):
     n = model.num_agents
     helpers = 0
     helpers += sum(1 for agent in model.bystanders if agent.is_helping is True)
-    print(helpers)
+    #print(helpers)
     helpers_percentage = helpers/n
     return helpers_percentage
 
@@ -29,12 +29,14 @@ class Environment(mesa.Model):
     def __init__(self,
                 *,
                 n,
+                seriousness,
                 width,
                 height,
                 agents_helping: int = 0,
                 rng=None):
         super().__init__(rng=rng)
         self.num_agents = n
+        self.seriousness = seriousness
         self.agents_helping = agents_helping
         self.grid = OrthogonalMooreGrid((width, height), torus=True, random=self.random)
         self.datacollector = mesa.DataCollector(
@@ -58,14 +60,14 @@ class Environment(mesa.Model):
             self.num_agents,
             cell=self.random.choices(self.grid.all_cells.cells, k=self.num_agents),
             n_bystanders=self.num_agents,
-            seriousness=1,
+            seriousness=self.seriousness,
             helping_tendency=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
             confidence=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
             judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
         self.schedule_event(self.call_for_help, at=0.0)
-        print("this is it")
-        print(np.random.normal(0.5, 1))
+        #print("this is it")
+        #print(np.random.normal(0.5, 1))
 
     def call_for_help(self):
         selected_agents = self.random.sample(
@@ -85,8 +87,19 @@ class Environment(mesa.Model):
     def extract_data(self):
         self.helpers_over_time = self.datacollector.get_model_vars_dataframe()
         g = sns.lineplot(data=self.helpers_over_time)
-        g.set(title="Helpers over time", ylabel="helpers")
+        g.set(title=f"Helpers over time with {self.num_agents} agents", ylabel="helpers")
+        g.set_ylim(0, 1.1)
         plt.show()
 
     def get_total_helpers(self):
         return len(self.bystanders.select(lambda a: a.is_helping == True))
+
+    def someone_helped(self):
+        helpers_over_time = self.datacollector.get_model_vars_dataframe()
+        helpers_perc = helpers_over_time["helpers percentage"]
+        #print(helpers_perc)
+        #print("this", helpers_perc[1])
+        if helpers_perc[1] > 0:
+            return 1
+        else:
+            return 0
