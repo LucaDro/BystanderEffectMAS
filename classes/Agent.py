@@ -32,10 +32,6 @@ class PartyAgents(CellAgent):
 
         self.is_helping = False
         self.helping_probability = None
-        print("agent")
-        print(self.helping_tendency)
-        print(self.confidence)
-        print(self.judgement_fear)
 
     def assign_responsibility(self, responsibility_group):
         self.n_responsibility_group = responsibility_group
@@ -83,7 +79,7 @@ class PartyAgents(CellAgent):
 
     def _update_feeling_of_responsibility(self):
         n_perceived_bystanders = self.n_responsibility_group if self.called_out == True else self.n_bystanders
-        responsibility_feeling = 1/(n_perceived_bystanders + 1)  # it could make sense to use a growth curve with limit in here to reflect how at some point more bystanders will not have more of an effect (check studies)
+        responsibility_feeling = 1/n_perceived_bystanders  # it could make sense to use a growth curve with limit in here to reflect how at some point more bystanders will not have more of an effect (check studies)
         perceived_responsibility = responsibility_feeling * (self.helping_tendency + 0.5)
         return perceived_responsibility
 
@@ -124,7 +120,7 @@ class PartyAgents(CellAgent):
         It decreases based off of how many helpers there are and what the ratio of helpers to non helpers is
         It also decreases as the fear of judgement decreases.'''
         START_THRESHOLD = 0.5
-        helper_proportion = self.n_helpers/self.n_bystanders if self.n_bystanders != 0 else 1
+        helper_proportion = self.n_helpers/self.n_bystanders
         numerator = ((1-helper_proportion)**self.n_helpers) * self.judgement_fear
         audience_inhibition_threshold = START_THRESHOLD + numerator/2
         return audience_inhibition_threshold
