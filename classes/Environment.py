@@ -15,6 +15,14 @@ def compute_helpers(model):
     helpers_percentage = helpers/n
     return helpers_percentage
 
+def count_helpers(model):
+    n = model.agents
+    helpers = 0
+    helpers += sum(1 for agent in model.bystanders if agent.is_helping is True)
+    #print(helpers)
+    return helpers
+
+
 def compute_called_out_helpers(model):
     """Computes the amount of people in the called out group that are helpers"""
     pass
@@ -41,6 +49,7 @@ class Environment(mesa.Model):
         self.grid = OrthogonalMooreGrid((width, height), torus=True, random=self.random)
         self.datacollector = mesa.DataCollector(
             model_reporters={"helpers percentage": compute_helpers,
+                             "num helpers": count_helpers,
                              "called_out_helpers": compute_called_out_helpers,
                              "non called out helpers": compute_non_called_out_helpers},
             agenttype_reporters={
@@ -66,16 +75,17 @@ class Environment(mesa.Model):
             # confidence = 1,
             judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
-        self.schedule_event(self.call_for_help, at=0.0)
+        # self.schedule_event(self.call_for_help, at=0.0)
         #print("this is it")
         #print(np.random.normal(0.5, 1))
 
-    def call_for_help(self):
+    def call_for_help(self, num):
         selected_agents = self.random.sample(
             list(self.bystanders),
-            k=self.agents_helping,
+            k=num,
         )
-        # selected_agents.do("assign_responsibility", self.agents_helping)
+        for agents in selected_agents:
+            agents.is_helping = True
 
 
     def step(self):
@@ -94,12 +104,12 @@ class Environment(mesa.Model):
     def get_total_helpers(self):
         return len(self.bystanders.select(lambda a: a.is_helping == True))
 
-    def someone_helped(self):
+    def someone_helped(self, base = 0):
         helpers_over_time = self.datacollector.get_model_vars_dataframe()
-        helpers_perc = helpers_over_time["helpers percentage"]
+        helpers_perc = helpers_over_time["num helpers"]
         #print(helpers_perc)
         #print("this", helpers_perc[1])
-        if helpers_perc[1] > 0:
+        if helpers_perc[1] > base:
             return 1
         else:
             return 0

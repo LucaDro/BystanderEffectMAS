@@ -90,7 +90,7 @@ class PartyAgents(CellAgent):
                 self.is_helping = True
 
     def _update_feeling_of_responsibility(self):
-        n_perceived_bystanders = self.n_responsibility_group if self.called_out == True else self.n_bystanders
+        n_perceived_bystanders = self.n_responsibility_group if self.called_out == True else self.n_non_helpers
         responsibility_feeling = 1/n_perceived_bystanders  # it could make sense to use a growth curve with limit in here to reflect how at some point more bystanders will not have more of an effect (check studies)
         perceived_responsibility = responsibility_feeling * (self.helping_tendency + 0.5)
         return perceived_responsibility
