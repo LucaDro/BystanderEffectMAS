@@ -3,9 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-SERIOUSNESS = 0.4
-AGENTS = [1,2,3,4,5,6,7,8]
+SERIOUSNESS = 0.1
+
 CALLED_OUT_GROUP = 1
+AGENTS = [n for n in range(1, 21) if n >= CALLED_OUT_GROUP]
 ITERATIONS = 1000
 PATH_FILE = "plots/"
 
