@@ -1,3 +1,5 @@
+from mesa import agent
+
 from classes.Agent import PartyAgents as AgentClass
 import mesa
 from mesa.discrete_space import OrthogonalMooreGrid
@@ -84,13 +86,11 @@ class Environment(mesa.Model):
         #print(np.random.normal(0.5, 1))
 
     def call_for_help(self):
-        selected_agents = self.random.sample(
-            list(self.bystanders),
-            k=self.agents_helping,
-        )
-        for agents in selected_agents:
-            agents.assign_responsibility(self.agents_helping)
+        actual_group_size = min(self.agents_helping, self.num_agents)
+        selected_agents = self.random.sample(list(self.bystanders), k=actual_group_size)
 
+        for agent in selected_agents:
+            agent.assign_responsibility(actual_group_size)
 
     def step(self):
         self.datacollector.collect(self)

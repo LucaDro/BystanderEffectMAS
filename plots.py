@@ -5,8 +5,8 @@ import numpy as np
 
 SERIOUSNESS = 0.1
 
-CALLED_OUT_GROUP = 1
-AGENTS = [n for n in range(1, 21) if n >= CALLED_OUT_GROUP]
+CALLED_OUT_GROUP = 3
+AGENTS = [1, 2, 3, 4, 5, 6, 7, 8]
 ITERATIONS = 1000
 PATH_FILE = "plots/"
 
