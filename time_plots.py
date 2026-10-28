@@ -22,6 +22,7 @@ def make_history_plot(total_helpers, called_out_helpers, baseline_helpers):
     fig.set_figheight(6)
     plt.title(f"average number of helpers by timestep over {ITERATIONS} iterations \n with {AGENTS} bystanders when assigning responsibility to {CALLED_OUT_GROUP} bystanders")
     plt.legend()
+    plt.savefig(PATH_FILE+f"helpers_at_seriousness{SERIOUSNESS}_with_group_size_{AGENTS}_and_assigned_responsibility_group_{CALLED_OUT_GROUP}.png")
     plt.show()
 
 def plot():
