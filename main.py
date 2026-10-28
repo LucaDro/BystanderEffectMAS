@@ -39,27 +39,27 @@ def main():
         percentage_helper_with_help = [0,0,0,0,0]
         agent_nr_list = [1,2,3,4,5]
         for idx, agent in enumerate(agent_nr_list):
-            iterations = 1000
+            iterations = 1
             agent_nr = agent
 
             for i in range(iterations):
-                env = Environment(n=agent_nr, seriousness=seriousness, width=10, height=10, )
+                env = Environment(n=agent_nr, seriousness=seriousness, width=10, height=10, agents_helping=1)
                 # env.call_for_help(1)
-                env.run_for(2)
+                env.run_for(5)
                 #env.extract_data()
                 help = env.someone_helped()
                 percentage_helper[idx] += help
             percentage_helper[idx] /= iterations
             print("Percentage of Helpers:", percentage_helper)
-            for i in range(iterations):
-                env = Environment(n=agent_nr+1, seriousness=seriousness, width=10, height=10, )
-                env.call_for_help(1)
-                env.run_for(2)
-                #env.extract_data()
-                help = env.someone_helped(1)
-                percentage_helper_with_help[idx] += help
-            percentage_helper_with_help[idx] /= iterations
-            print("Percentage of Helpers with help:", percentage_helper_with_help)
+            # for i in range(iterations):
+            #     env = Environment(n=agent_nr+1, seriousness=seriousness, width=10, height=10, )
+            #     # env.call_for_help(1)
+            #     env.run_for(5)
+            #     #env.extract_data()
+            #     help = env.someone_helped(1)
+            #     percentage_helper_with_help[idx] += help
+            # percentage_helper_with_help[idx] /= iterations
+            # print("Percentage of Helpers with help:", percentage_helper_with_help)
 
         plot_stuff(seriousness, agent_nr_list, percentage_helper, percentage_helper_with_help)
 
@@ -74,8 +74,8 @@ def main_with_helper():
 
             for i in range(iterations):
                 env = Environment(n=agent_nr+1, seriousness=seriousness, width=10, height=10, )
-                env.call_for_help(1)
-                env.run_for(2)
+                # env.call_for_help(1)
+                env.run_for(5)
                 #env.extract_data()
                 help = env.someone_helped(1)
                 percentage_helper[idx] += help

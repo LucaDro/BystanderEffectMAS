@@ -25,7 +25,11 @@ def count_helpers(model):
 
 def compute_called_out_helpers(model):
     """Computes the amount of people in the called out group that are helpers"""
-    pass
+    n = model.agents
+    helpers = 0
+    helpers += sum(1 for agent in model.bystanders if agent.is_helping and agent.called_out)
+    #print(helpers)
+    return helpers
 
 def compute_non_called_out_helpers(model):
     """Computes the amount of people in the non called out group that are helpers"""
@@ -75,17 +79,17 @@ class Environment(mesa.Model):
             # confidence = 1,
             judgement_fear=[np.random.normal(0.5, 0.25) for _ in range(self.num_agents)],
         )
-        # self.schedule_event(self.call_for_help, at=0.0)
+        self.schedule_event(self.call_for_help, at=0.0)
         #print("this is it")
         #print(np.random.normal(0.5, 1))
 
-    def call_for_help(self, num):
+    def call_for_help(self):
         selected_agents = self.random.sample(
             list(self.bystanders),
-            k=num,
+            k=self.agents_helping,
         )
         for agents in selected_agents:
-            agents.is_helping = True
+            agents.assign_responsibility(self.agents_helping)
 
 
     def step(self):
@@ -103,6 +107,9 @@ class Environment(mesa.Model):
 
     def get_total_helpers(self):
         return len(self.bystanders.select(lambda a: a.is_helping == True))
+
+    def get_total_called_out_helpers(self):
+        return len(self.bystanders.select(lambda a: a.is_helping == True and a.called_out == True))
 
     def someone_helped(self, base = 0):
         helpers_over_time = self.datacollector.get_model_vars_dataframe()
